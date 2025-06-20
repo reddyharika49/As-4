@@ -1,0 +1,25 @@
+.main_body{
+  /* width: calc(100vw-15vw); */
+  height: calc(100vh - 8vh);
+}
+.main{
+  width: 85%;
+  height: calc(100vh - 8vh);
+
+}
+.aside{
+   width: 15%;
+   height: calc(100vh - 8vh);
+   background-color: brown;
+ 
+}
+.student_info{
+  width: 75%;
+  /* height: calc(100vh - 33vh); */
+   /* background-color: skyblue; */
+}
+.info_content{
+  width:25%;
+  height: calc(100vh - 33vh);
+   background-color: black;
+}
