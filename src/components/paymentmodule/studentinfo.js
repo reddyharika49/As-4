@@ -47,18 +47,20 @@ const StudentInfo = () => {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+      <div className='card'>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4 ,flexDirection:"row"}}>
         <div
           ref={tabContainerRef}
           className="tabs-scroll"
           style={{
-            display: 'flex',
+            display: 'flex-direction-row',
             overflowX: 'auto',
             scrollBehavior: 'smooth',
             width: '70%',
             whiteSpace: 'nowrap',
             borderBottom:"1px solid #dcdcdc",
-            // paddingTop:"5px",
+             paddingTop:"5px",
+             paddingLeft:"30px",
             scrollbarWidth: 'none' // Firefox
           }}
         >
@@ -100,10 +102,10 @@ const StudentInfo = () => {
             </NavLink>
             
           ))}
+         
         </div>
-
-        {/* Right Scroll Button */}
-        <IconButton
+         <div>
+              <IconButton
           onClick={scrollRight}
           size="small"
           sx={{
@@ -115,14 +117,26 @@ const StudentInfo = () => {
         >
           <ChevronRight />
         </IconButton>
-        
+          </div>
+
+
+
+
+
+
+        {/* Right Scroll Button */}
+      
+          
       </div>
+        <div className="sub-tab-content mt-3  ">
+            <Outlet />
+          </div>
+
+          </div>
      {/* <div><hr style={{marginTop:"0px"}}></hr></div> */}
 
       {/* Content */}
-      <div className="sub-tab-content mt-3">
-        <Outlet />
-      </div>
+      
     </div>
   );
 };
