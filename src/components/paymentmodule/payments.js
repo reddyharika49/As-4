@@ -11,7 +11,7 @@ import {
     InputAdornment
 } from '@mui/material';
 import { ArrowForward, Add, Close, FolderOpen, Search } from '@mui/icons-material';
-import { Formik, Form, FieldArray, Field } from 'formik';
+import { Formik, Form, FieldArray, Field,useFormikContext } from 'formik';
 import { toWords } from 'number-to-words';
 
 const feeHeads = [
@@ -59,7 +59,10 @@ const Payments = () => {
     const FeeItem = ({ feeItem, index, remove }) => {
         // Use feeItem.name directly since it contains the selected fee head's name
         const feeHeadName = feeItem?.name || 'Fee Head';
+        const { values,handleChange,handleBlur } = useFormikContext();
 
+        const amount = values.feeItems?.[index]?.amount || '';
+        const description = values.feeItems?.[index]?.description || '';
         return (
             <Box
                 sx={{
@@ -105,44 +108,58 @@ const Payments = () => {
                         zIndex: 2
                     }}
                 >
-                    <Close sx={{ fontSize: 18 }} />
+                    <Close sx={{ fontSize: 18 ,}} />
                 </IconButton>
 
-                <Grid container spacing={2} mt={2}>
-                    <Grid item xs={4}>
-                        <Field
-                            name={`feeItems[${index}].amount`}
-                            as={TextField}
-                            fullWidth
-                            placeholder="Enter Amount"
-                            variant="outlined"
-                            size="small"
-                        />
-                    </Grid>
-                    <Grid item xs={8}>
-                        <Field
-                            name={`feeItems[${index}].description`}
-                            as={TextField}
-                            fullWidth
-                            placeholder="Description"
-                            variant="outlined"
-                            size="small"
-                        />
-                    </Grid>
-                   
-                </Grid>
-            </Box>
+        <Grid container spacing={2} mt={2}>
+        <Grid item xs={4}>
+          <TextField
+            label="Enter Amount"
+            fullWidth
+            variant="outlined"
+            size="small"
+            type="number"
+            name={`feeItems[${index}].amount`}
+            value={amount}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+          {amount && !isNaN(amount) && (
+            <Typography
+              variant="caption"
+              sx={{ mt: 1, display: 'block', color: 'green' }}
+            >
+              * {toWords(Number(amount))}
+            </Typography>
+          )}
+        </Grid>
+            <Grid item xs={8}>
+                <TextField
+                    label="Description"
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    name={`feeItems[${index}].description`}
+                    value={description}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                />
+            </Grid>
+
+        </Grid>
+
+        </Box>
         );
     };
 
     return (
         <div
-            className="payments mt-3"
+            className="payment"
             style={{
-                height: '50vh',
+                height: '45vh',
                 overflowY: 'auto',
                 padding: '20px',
-                position: 'relative'
+                position: 'relative',paddingTop:"0px"
             }}
         >
             {showModal && (
@@ -164,21 +181,22 @@ const Payments = () => {
 
             {/* Top Section */}
             <div className="payments_top d-flex flex-row " style={{ gap: "150px" }}>
-                <div className="payments_top_left">
-                    <p style={{ marginBottom: "0px" }}>Due Amount</p>
-                    <p style={{ backgroundColor: "gray", marginBottom: "0px" }}>45,000</p>
+                <div className="payments_top_left d-flex flex-column ">
+                    <div style={{ marginBottom: "0px" }}>Due Amount</div>
+                    <div  style={{ backgroundColor: "#E9E9E9", marginBottom: "0px",paddingLeft:"20px" ,borderRadius:"5px"
+                    }}>45,000</div>
                 </div>
 
                 <div className="payments_top_middle mt-2 rounded-4">
-                    <div className="border rounded-5 p-2" style={{ backgroundColor: "#F7F7F7" }}>
+                    <div className="border rounded-5 p-1" style={{ backgroundColor: "#F7F7F7" ,border:"border: 1px solid #D2D2D2"}}>
                         <div className="btn-group rounded-4 gap-2" role="group">
                             {['Cash', 'DD', 'Cheque', 'Credit/Debit Card'].map(mode => (
                                 <button
                                     key={mode}
                                     type="button"
-                                    className={`btn ${paymentMode === mode ? 'btn-primary' : 'btn-outline-secondary'}`}
+                                    className={`btn ${paymentMode === mode ? 'btn-primary' : ''}`}
                                     onClick={() => handlePaymentModeChange(mode)}
-                                    style={{ padding: "5px 20px", borderRadius: "20px", border: "none" }}
+                                    style={{ padding: "3px 20px", borderRadius: "20px", border: "none" }}
                                 >
                                     {mode}
                                 </button>
@@ -191,30 +209,42 @@ const Payments = () => {
             {/* Term Toggle + Amount Fields */}
             <Box sx={{ position: 'relative', width: '100%', maxWidth: 800, mx: 'auto' }}>
                 <ToggleButtonGroup
-                    value={term}
-                    exclusive
-                    onChange={handleTermChange}
-                    sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 30,
-                        transform: 'translateY(-50%)',
-                        backgroundColor: '#fff',
-                        borderRadius: 8,
-                        boxShadow: 2,
-                        zIndex: 1
-                    }}
-                >
-                    {['term1', 'term2', 'term3'].map((val, i) => (
-                        <ToggleButton
-                            key={val}
-                            value={val}
-                            sx={{ borderRadius: '23px', px: 3, py: 0.5, fontWeight: 500 }}
-                        >
-                            {`Term Fee ${i + 1}`}
-                        </ToggleButton>
-                    ))}
-                </ToggleButtonGroup>
+  value={term}
+  exclusive
+  onChange={handleTermChange}
+  sx={{
+    position: 'absolute',
+    top: 0,
+    left: 30,
+    transform: 'translateY(-50%)',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    boxShadow: 2,
+    zIndex: 1
+  }}
+>
+  {['term1', 'term2', 'term3'].map((val, i) => (
+    <ToggleButton
+      key={val}
+      value={val}
+      sx={{
+        borderRadius: '23px',
+        px: 3,
+        py: 0.5,
+        fontWeight: 500,
+        '&.Mui-selected': {
+          bgcolor: '#1E1EFF',
+          color: '#fff',
+          '&:hover': {
+            bgcolor: '#1E1EFF',
+          }
+        }
+      }}
+    >
+      {`Term Fee ${i + 1}`}
+    </ToggleButton>
+  ))}
+</ToggleButtonGroup>
 
                 <Box sx={{ mt: 4, border: '1px solid #ccc', borderRadius: 2, p: 4, backgroundColor: '#fff' }}>
                     <Box display="flex" gap={2} flexWrap="wrap">
@@ -222,13 +252,14 @@ const Payments = () => {
                             label="Enter Amount"
                             variant="outlined"
                             value={amount}
+                            type="number"
                             onChange={handleAmountChange}
                             sx={{ flex: 1 }}
                         />
                         <TextField label="Description" variant="outlined" sx={{ flex: 2 }} />
                     </Box>
                     <Typography sx={{ mt: 1, color: amountInWords ? 'green' : 'orangered', fontSize: 13 }}>
-                        * {amountInWords ? `Amount in words: ${amountInWords}` : 'Amount in words will display here'}
+                       * {amountInWords ? ` ${amountInWords}` : 'Amount in words will display here'}
                     </Typography>
                 </Box>
             </Box>
@@ -280,10 +311,11 @@ const Payments = () => {
 
                             <Button
                                 variant="contained"
-                                color="primary"
+                                
                                 startIcon={<Add />}
+                                size="large"
                                 onClick={() => setShowModal(true)}
-                                sx={{ mt: 3, borderRadius: '12px', textTransform: 'capitalize',marginLeft:"250px" }}
+                                sx={{ mt: 3, borderRadius: '5px', textTransform: 'capitalize', marginLeft: "270px" ,width:"40%",textAlign:"center",backgroundColor:"#B6B1FF"}}
                             >
                                 Add Fee Head
                             </Button>
@@ -358,11 +390,21 @@ const Payments = () => {
             </Formik>
 
             {/* Print Receipt Button */}
-            <Box textAlign="center" mt={4}>
-                <Button variant="contained" endIcon={<ArrowForward />}>
-                    Print Receipt
-                </Button>
-            </Box>
+           <Box textAlign="center" mt={5}>
+        {paymentMode === 'DD' ? (
+          <Button
+            variant="contained"
+            endIcon={<ArrowForward />}
+          
+          >
+            Next
+          </Button>
+        ) : (
+          <Button variant="contained" endIcon={<ArrowForward />}>
+            Print Receipt
+          </Button>
+        )}
+      </Box>
         </div>
     );
 };
